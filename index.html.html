@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>QGIS Track Profile 2 Web</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+  <style>
+    html,
+    body,
+    #map,
+    #elevation-div {
+      height: 100%;
+      width: 100%;
+      padding: 0px;
+      margin: 0px;
+      position: relative;
+      z-index: 9999;
+    }
+
+    #elevation-div { overflow: visible; }
+    #map {
+      height: 75%;
+      position: relative;
+      z-index: 1;
+    }
+
+    #elevation-div {
+      height: 25%;
+      font: 12px/1.5 "Helvetica Neue", Arial, Helvetica, sans-serif;
+    }
+
+    .data-summary {
+      font-family: "Lucida Grande", "Lucida Sans Unicode", Verdana, Arial, Helvetica, sans-serif;
+      font-size: 12px;
+      position: absolute;
+      bottom: 0;
+      left: 45px;
+    }
+
+    .data-summary .summaryvalue {
+      font-weight: bold;
+    }
+
+  </style>
+  <style>
+   .custom-theme.leaflet-control.elevation .area {
+    fill: #d45f5f;
+    stroke: hsla(60, 0%, 0%, 0.85);
+    stroke-width: 2.5;
+   }
+
+   .custom-theme.height-focus.circle-lower {
+     fill: #ffb800;
+   }
+
+   .custom-theme.elevation-polyline {
+     stroke: #ff0000;
+     stroke-opacity: 0.85 ;
+   }
+ </style>
+
+  <!-- Leaflet (JS/CSS) -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.2/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.3.2/dist/leaflet.js"></script>
+  <!-- D3.js -->
+  <script src="https://unpkg.com/d3@4.13.0/build/d3.min.js" charset="utf-8"></script>
+  <!-- leaflet-gpx -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-gpx/1.4.0/gpx.js"></script>
+  <!-- leaflet-elevation -->
+  <link rel="stylesheet" href="https://unpkg.com/@raruto/leaflet-elevation@0.3.9/leaflet-elevation.min.css" />
+  <script src="https://unpkg.com/@raruto/leaflet-elevation@0.3.9/leaflet-elevation.min.js"></script>
+
+</head>
+
+<body>
+
+  <div id="map"></div>
+  <div id="elevation-div" class="leaflet-control elevation"></div>
+
+  <div id="data-summary" class="data-summary"><span class="totlen"><span class="summarylabel">Total Length: </span><span class="summaryvalue">0</span></span> &mdash; <span class="maxele"><span class="summarylabel">Max Elevation: </span><span class="summaryvalue">0</span></span>
+    &mdash; <span class="minele"><span class="summarylabel">Min Elevation: </span><span class="summaryvalue">0</span></span></div>
+
+  <script>
+  var opts = {"map": {"center": [41.4583, 12.7059], "zoom": 5, "markerZoomAnimation": false, "zoomControl": false}, "zoomControl": {"position": "topleft"}, "elevationControl": {"data": "{\"name\":\"VIA_CUAVA_LOS_MICOS\", \"type\":\"FeatureCollection\",\"features\": [{ \"type\": \"Feature\", \"properties\": { }, \"geometry\": { \"type\": \"MultiLineString\", \"coordinates\": [ [ [ -72.57967565799999, 7.928866967000033,203.20209999999497 ], [ -72.57942695599996, 7.92940651400005,198.8179999999993 ], [ -72.57895237899999, 7.929645882000045,199.62399999999616 ], [ -72.57843873699994, 7.929879374000052,202.00969999999506 ], [ -72.57827101599997, 7.930074940000054,205.2115000000049 ], [ -72.57821570399994, 7.930376702000046,209.44569999999658 ], [ -72.57822993999997, 7.93064378400004,214.5905999999959 ], [ -72.57801488699994, 7.930874566000057,215.16569999999774 ], [ -72.57782375699998, 7.931068101000051,217.2734000000055 ], [ -72.57760180999998, 7.9312256830000365,218.46959999999672 ], [ -72.57743640599995, 7.931359605000068,219.19830000000366 ], [ -72.57725095299998, 7.931525975000056,220.83400000000256 ], [ -72.57716098499998, 7.93162806600003,222.85490000000573 ], [ -72.57703891699998, 7.9316860790000305,223.0405000000028 ], [ -72.57686417299993, 7.931673990000036,223.99109999999928 ], [ -72.57682196999997, 7.9312686420000205,226.22470000000612 ], [ -72.57696593699995, 7.930995784000061,228.61139999999432 ], [ -72.57691050899996, 7.930754169000068,229.28789999999572 ], [ -72.57678385999998, 7.930667283000048,229.14650000000256 ], [ -72.57652274399999, 7.930537439000034,231.4841000000015 ], [ -72.57630622899995, 7.930499403000056,233.27909999999974 ], [ -72.57591015499997, 7.93056838800004,236.27330000000075 ], [ -72.57577019099995, 7.9306791060000705,237.58770000000368 ], [ -72.57555449199998, 7.930783811000026,237.65690000000177 ], [ -72.57519684499994, 7.930853470000045,239.82739999999467 ], [ -72.57501806399995, 7.930966869000031,241.59840000000258 ], [ -72.57466164799996, 7.930924926000046,245.40549999999348 ], [ -72.57426978699993, 7.930779389000065,247.89380000000529 ], [ -72.57399031099999, 7.9307237590000454,249.76959999999963 ], [ -72.57374882799996, 7.930822277000061,250.94710000000487 ], [ -72.57359705899995, 7.931082819000039,251.73249999999825 ], [ -72.57358447299998, 7.931553198000074,254.34350000000268 ], [ -72.57359457899997, 7.932105111000055,256.2225000000035 ], [ -72.57362124399998, 7.932474453000054,257.5862000000052 ], [ -72.57353462199995, 7.9327971820000585,259.18790000000445 ], [ -72.57354686899998, 7.9331398870000385,263.9570999999996 ], [ -72.57375116599997, 7.9335764380000455,267.55130000000645 ], [ -72.57388785999996, 7.933861708000052,269.80749999999534 ], [ -72.57410080599993, 7.933977563000042,271.8283999999985 ], [ -72.57426794899999, 7.933800551000047,271.78830000000016 ], [ -72.57442042599996, 7.933613611000055,271.97870000000694 ], [ -72.57460675499993, 7.933556751000026,271.70840000000317 ], [ -72.57463458899997, 7.933982895000042,274.6064000000042 ], [ -72.57454405399994, 7.934217422000074,278.83950000000186 ], [ -72.57445078199999, 7.934415381000065,282.0758999999962 ], [ -72.57461917999996, 7.934490489000041,285.01870000000054 ], [ -72.57488021499995, 7.934331437000026,283.0905999999959 ], [ -72.57516757099995, 7.93415897400007,279.5326000000059 ], [ -72.57531259699994, 7.934218405000024,281.88640000000305 ], [ -72.57553902699993, 7.934382613000025,285.6033000000025 ], [ -72.57587414999995, 7.9344937250000385,286.54670000000624 ], [ -72.57614763699996, 7.9346159320000424,286.4363000000012 ], [ -72.57627770999994, 7.934943791000023,291.48739999999816 ], [ -72.57624863299998, 7.935237783000048,293.80920000000333 ]]] } }]}", "options": {"position": "topright", "theme": "custom-theme", "useHeightIndicator": true, "collapsed": true, "detachedView": true, "elevationDiv": "#elevation-div", "followPositionMarker": true, "autohide": false}}, "layersControl": {"options": {"collapsed": true}}, "otmLayer": {"url": "http://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}", "options": {"attribution": "&copy; <a href=\"http://www.esri.com/\">Esri</a>"}}} ;
+    var map = new L.Map('map', opts.map);
+
+    var baseLayers = {};
+    baseLayers.OTM = new L.TileLayer(opts.otmLayer.url, opts.otmLayer.options);
+
+    var controlZoom = new L.Control.Zoom(opts.zoomControl);
+    var controlElevation = L.control.elevation(opts.elevationControl.options);
+    var controlLayer = L.control.layers(baseLayers, null, opts.layersControl.options);
+
+    controlZoom.addTo(map);
+    controlLayer.addTo(map);
+
+    map.addLayer(baseLayers.OTM);
+
+    map.on('eledata_loaded', function(e) {
+      var q = document.querySelector.bind(document);
+      var track = e.track_info;
+
+      controlLayer.addOverlay(e.layer, e.name);
+
+      q('.totlen .summaryvalue').innerHTML = track.distance.toFixed(2) + " km";
+      q('.maxele .summaryvalue').innerHTML = track.elevation_max.toFixed(2) + " m";
+      q('.minele .summaryvalue').innerHTML = track.elevation_min.toFixed(2) + " m";
+    });
+
+    controlElevation.loadChart(map);
+    controlElevation.loadData(opts.elevationControl.data);
+  </script>
+
+</body>
+
+</html>
